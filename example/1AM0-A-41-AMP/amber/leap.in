@@ -1,0 +1,4 @@
+source leaprc.RNA.OL3
+rec = loadpdb "rec.amber.pdb"
+savemol2 rec "rec.amber.mol2" 1
+quit

@@ -1,0 +1,171 @@
+reduce: version 3.3 06/02/2016, Copyright 1997-2016, J. Michael Word
+Processing file: --standard input--
+Database of HETATM connections: "/app/amber22//dat/reduce_wwPDB_het_dict.txt"
+VDW dot density = 16/A^2
+Orientation penalty scale = 9999 (999900%)
+Eliminate contacts within 3 bonds.
+Ignore atoms with |occupancy| <= 0.01 during adjustments.
+Waters ignored if B-Factor >= 40 or |occupancy| < 0.66
+Aromatic rings in amino acids accept hydrogen bonds.
+Building His ring NH Hydrogens.
+Flipping Asn, Gln and His groups.
+For each flip state, bumps where gap is more than 0.4A are indicated with '!'.
+Building or keeping OH & SH Hydrogens.
+Rotating existing OH & SH Hydrogens
+Rotating NH3 Hydrogens.
+Not processing Met methyls.
+ Singles(size 67): A   1 G   O2' : A   1 G   O5' : A   2 G   O2' : A   3 G   O2' 
+  : A   4 A   O2' : A   5 C   O2' : A   6 C   O2' : A   7 A   O2' : A   9 G   O2' 
+  : A  11 G   O2' : A  12 U   O2' : A  15 U   O2' : A  16 U   O2' : A  17 G   O2' 
+  : A  18 U   O2' : A  19 U   O2' : A  20 C   O2' : A  21 A   O2' : A  22 C   O2' 
+  : A  23 A   O2' : A  24 G   O2' : A  25 G   O2' : A  26 C   O2' : A  27 U   O2' 
+  : A  28 G   O2' : A  30 G   O2' : A  31 A   O2' : A  32 A   O2' : A  33 A   O2' 
+  : A  34 G   O2' : A  35 U   O2' : A  38 C   O2' : A  39 U   O2' : A  40 U   O2' 
+  : A  41 U   O2' : A  42 G   O2' : A  43 A   O2' : A  46 C   O2' : A  47 U   O2' 
+  : A  48 G   O2' : A  49 A   O2' : A  50 A   O2' : A  51 C   O2' : A  52 A   O2' 
+  : A  53 G   O2' : A  54 G   O2' : A  55 G   O2' : A  56 U   O2' : A  57 A   O2' 
+  : A  60 G   O2' : A  61 C   O2' : A  62 C   O2' : A  63 U   O2' : A  64 G   O2' 
+  : A  65 C   O2' : A  66 G   O2' : A  67 C   O2' : A  68 A   O2' : A  69 G   O2' 
+  : A  70 G   O2' : A  71 G   O2' : A  73 G   O2' : A  74 U   O2' : A  75 G   O2' 
+  : A  76 U   O2' : A  77 C   O2' : A  77 C   O3' 
+ Set 1 (size 2): A  37 C   O2' : A  44 A   O2' 
+ Set 2 (size 2): A  36 C   O2' : A  29 A   O2' 
+ Set 3 (size 2): A  58 A   O2' : A  14 C   O2' 
+ Set 4 (size 2): A  13 G   O2' : A  59 U   O2' 
+ Set 5 (size 2): A  10 G   O2' : A  45 C   O2' 
+ Set 6 (size 2): A   8 G   O2' : A  72 A   O2' 
+ orientation 1: A   1 G   O2' :   rot  180: bump=0.000, HB=0.000, total=0.000
+ orientation 1: A   1 G   O5' :   rot  180: bump=0.000, HB=0.000, total=0.000
+ orientation 1: A   2 G   O2' :   rot  180: bump=0.000, HB=0.000, total=0.000
+ orientation 1: A   3 G   O2' :   rot  180: bump=0.000, HB=0.000, total=0.000
+ orientation 1: A   4 A   O2' :   rot  180: bump=0.000, HB=0.000, total=0.000
+ orientation 1: A   5 C   O2' :   rot  180: bump=0.000, HB=0.000, total=0.000
+ orientation 1: A   6 C   O2' :   rot  180: bump=0.000, HB=0.000, total=0.000
+ orientation 1: A   7 A   O2' :   rot  180: bump=0.000, HB=0.000, total=0.000
+ orientation 1: A   9 G   O2' :   rot  167: bump=0.000, HB=0.000, total=0.000
+ orientation 1: A  11 G   O2' :   rot  180: bump=0.000, HB=0.000, total=0.000
+ orientation 1: A  12 U   O2' :   rot  180: bump=0.000, HB=0.000, total=0.000
+ orientation 1: A  15 U   O2' :   rot  180: bump=0.000, HB=0.000, total=0.000
+ orientation 1: A  16 U   O2' :   rot  180: bump=0.000, HB=0.000, total=0.000
+ orientation 1: A  17 G   O2' :   rot  180: bump=0.000, HB=0.000, total=0.000
+ orientation 1: A  18 U   O2' :   rot  180: bump=0.000, HB=0.000, total=0.000
+ orientation 1: A  19 U   O2' :   rot  180: bump=0.000, HB=0.000, total=0.000
+ orientation 1: A  20 C   O2' :   rot  180: bump=0.000, HB=0.000, total=0.000
+ orientation 1: A  21 A   O2' :   rot  180: bump=0.000, HB=0.000, total=0.000
+ orientation 1: A  22 C   O2' :   rot  180: bump=0.000, HB=0.000, total=0.000
+ orientation 1: A  23 A   O2' :   rot  180: bump=0.000, HB=0.000, total=0.000
+ orientation 1: A  24 G   O2' :   rot  180: bump=0.000, HB=0.000, total=0.000
+ orientation 1: A  25 G   O2' :   rot  180: bump=0.000, HB=0.000, total=0.000
+ orientation 1: A  26 C   O2' :   rot  180: bump=0.000, HB=0.000, total=0.000
+ orientation 1: A  27 U   O2' :   rot  180: bump=0.000, HB=0.000, total=0.000
+ orientation 1: A  28 G   O2' :   rot  170: bump=0.000, HB=0.000, total=0.000
+ orientation 1: A  30 G   O2' :   rot  170: bump=0.000, HB=0.000, total=0.000
+ orientation 1: A  31 A   O2' :   rot  169: bump=0.000, HB=0.000, total=0.000
+ orientation 1: A  32 A   O2' :   rot  180: bump=0.000, HB=0.000, total=0.000
+ orientation 1: A  33 A   O2' :   rot  170: bump=0.000, HB=0.000, total=0.000
+ orientation 1: A  34 G   O2' :   rot  170: bump=0.000, HB=0.000, total=0.000
+ orientation 1: A  35 U   O2' :   rot  180: bump=0.000, HB=0.000, total=0.000
+ orientation 1: A  38 C   O2' :   rot  170: bump=0.000, HB=0.000, total=0.000
+ orientation 1: A  39 U   O2' :   rot  180: bump=0.000, HB=0.000, total=0.000
+ orientation 1: A  40 U   O2' :   rot  180: bump=0.000, HB=0.000, total=0.000
+ orientation 1: A  41 U   O2' :   rot  180: bump=0.000, HB=0.000, total=0.000
+ orientation 1: A  42 G   O2' :   rot  180: bump=0.000, HB=0.000, total=0.000
+ orientation 1: A  43 A   O2' :   rot  180: bump=0.000, HB=0.000, total=0.000
+ orientation 1: A  46 C   O2' :   rot  180: bump=0.000, HB=0.000, total=0.000
+ orientation 1: A  47 U   O2' :   rot  180: bump=0.000, HB=0.000, total=0.000
+ orientation 1: A  48 G   O2' :   rot  180: bump=0.000, HB=0.000, total=0.000
+ orientation 1: A  49 A   O2' :   rot  180: bump=0.000, HB=0.000, total=0.000
+ orientation 1: A  50 A   O2' :   rot  180: bump=0.000, HB=0.000, total=0.000
+ orientation 1: A  51 C   O2' :   rot  180: bump=0.000, HB=0.000, total=0.000
+ orientation 1: A  52 A   O2' :   rot  180: bump=0.000, HB=0.000, total=0.000
+ orientation 1: A  53 G   O2' :   rot  180: bump=0.000, HB=0.000, total=0.000
+ orientation 1: A  54 G   O2' :   rot  180: bump=0.000, HB=0.000, total=0.000
+ orientation 1: A  55 G   O2' :   rot  180: bump=0.000, HB=0.000, total=0.000
+ orientation 1: A  56 U   O2' :   rot  174: bump=0.000, HB=0.000, total=0.000
+ orientation 1: A  57 A   O2' :   rot  180: bump=0.000, HB=0.000, total=0.000
+ orientation 1: A  60 G   O2' :   rot  180: bump=0.000, HB=0.000, total=0.000
+ orientation 1: A  61 C   O2' :   rot  180: bump=0.000, HB=0.000, total=0.000
+ orientation 1: A  62 C   O2' :   rot  180: bump=0.000, HB=0.000, total=0.000
+ orientation 1: A  63 U   O2' :   rot  180: bump=0.000, HB=0.000, total=0.000
+ orientation 1: A  64 G   O2' :   rot  180: bump=0.000, HB=0.000, total=0.000
+ orientation 1: A  65 C   O2' :   rot  180: bump=0.000, HB=0.000, total=0.000
+ orientation 1: A  66 G   O2' :   rot  180: bump=0.000, HB=0.000, total=0.000
+ orientation 1: A  67 C   O2' :   rot  180: bump=0.000, HB=0.000, total=0.000
+ orientation 1: A  68 A   O2' :   rot  180: bump=0.000, HB=0.000, total=0.000
+ orientation 1: A  69 G   O2' :   rot  180: bump=0.000, HB=0.000, total=0.000
+ orientation 1: A  70 G   O2' :   rot  180: bump=0.000, HB=0.000, total=0.000
+ orientation 1: A  71 G   O2' :   rot  180: bump=0.000, HB=0.000, total=0.000
+ orientation 1: A  73 G   O2' :   rot  172: bump=0.000, HB=0.000, total=0.000
+ orientation 1: A  74 U   O2' :   rot  180: bump=0.000, HB=0.000, total=0.000
+ orientation 1: A  75 G   O2' :   rot  180: bump=0.000, HB=0.000, total=0.000
+ orientation 1: A  76 U   O2' :   rot  180: bump=0.000, HB=0.000, total=0.000
+ orientation 1: A  77 C   O2' :   rot  180: bump=0.000, HB=0.000, total=0.000
+ orientation 1: A  77 C   O3' :   rot  180: bump=0.000, HB=0.000, total=0.000
+
+ Processing set: A  37 C   O2' [5]: A  44 A   O2' [5]
+ permutations: 25
+ Computing dot scores
+ Num optimizations problems to be solved for this clique: 1
+ Beginning Optimization
+ Dynamic programming succeeded to fully optimize hypergraph
+ Optimal score following low resolution optimization: 0.000
+> : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       
+ Optimal score following high resolution, local optimization: 0.000
+
+ Processing set: A  36 C   O2' [7]: A  29 A   O2' [4]
+ permutations: 28
+ Computing dot scores
+ Num optimizations problems to be solved for this clique: 1
+ Beginning Optimization
+ Dynamic programming succeeded to fully optimize hypergraph
+ Optimal score following low resolution optimization: 0.000
+> : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       
+ Optimal score following high resolution, local optimization: 0.000
+
+ Processing set: A  58 A   O2' [5]: A  14 C   O2' [4]
+ permutations: 20
+ Computing dot scores
+ Num optimizations problems to be solved for this clique: 1
+ Beginning Optimization
+ Dynamic programming succeeded to fully optimize hypergraph
+ Optimal score following low resolution optimization: 0.000
+> : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       
+ Optimal score following high resolution, local optimization: 0.000
+
+ Processing set: A  13 G   O2' [4]: A  59 U   O2' [5]
+ permutations: 20
+ Computing dot scores
+ Num optimizations problems to be solved for this clique: 1
+ Beginning Optimization
+ Dynamic programming succeeded to fully optimize hypergraph
+ Optimal score following low resolution optimization: 0.000
+> : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       
+ Optimal score following high resolution, local optimization: 0.000
+
+ Processing set: A  10 G   O2' [7]: A  45 C   O2' [4]
+ permutations: 28
+ Computing dot scores
+ Num optimizations problems to be solved for this clique: 1
+ Beginning Optimization
+ Dynamic programming succeeded to fully optimize hypergraph
+ Optimal score following low resolution optimization: 0.000
+> : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       
+ Optimal score following high resolution, local optimization: 0.000
+
+ Processing set: A   8 G   O2' [9]: A  72 A   O2' [10]
+ permutations: 90
+ Computing dot scores
+ Num optimizations problems to be solved for this clique: 1
+ Beginning Optimization
+ Dynamic programming succeeded to fully optimize hypergraph
+ Optimal score following low resolution optimization: 0.000
+> : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       > : 0.000       
+ Optimal score following high resolution, local optimization: 0.000
+Found 0 hydrogens (0 hets)
+Standardized 0 hydrogens (0 hets)
+Added 833 hydrogens (0 hets)
+Removed 0 hydrogens (0 hets)
+Adjusted 79 group(s)
+If you publish work which uses reduce, please cite:
+Word, et. al. (1999) J. Mol. Biol. 285, 1735-1747.
+For more information see http://kinemage.biochem.duke.edu

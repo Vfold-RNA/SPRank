@@ -1,0 +1,5 @@
+/bin/sprank
+/data
+/docker
+pipeline.*
+.vscode/

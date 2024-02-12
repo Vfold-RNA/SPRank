@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-SPRANK_HOME="../"
+
 flag=true
 for name in "1AM0-A-41-AMP" "3D2X-A-85-D2X"
 do
