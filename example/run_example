@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+SPRANK_HOME="../"
+flag=true
+for name in "1AM0-A-41-AMP" "3D2X-A-85-D2X"
+do
+    echo "---------------------------"
+    echo "Running ${name}"
+    echo "---------------------------"
+    # ${SPRANK_HOME}/util/ambertools_prepare_rec -r ${name}/rec.pdb -o ${name}/amber
+    # ${SPRANK_HOME}/util/ambertools_prepare_cpd -c ${name}/lig_charged.sdf -o ${name}/amber
+    ${SPRANK_HOME}/util/check_atom_order -c ${name}/amber/lig_charged.amber.mol2 -p ${name}/pose/pose.mol2
+    ${SPRANK_HOME}/bin/sprank -r ${name}/amber/rec.amber.mol2 -c ${name}/amber/lig_charged.amber.mol2 -p ${name}/pose/pose.mol2 &> ${name}/score.dat
+
+    # compare the predicted scores with reference
+    diff ${name}/score.dat ${name}/reference.score.dat &> ${name}/score.dat.diff
+    if [ ! -s "${name}/score.dat.diff" ]; then
+        echo "PASSED: ${name} example."
+        rm -f ${name}/score.dat.diff
+    else
+        echo "POSSIBLE FAILURE: ${name} example. Please check ${name}/score.dat.diff"
+        flag=false
+    fi
+done
+
+if [ "${flag}" = false ] ; then
+    echo "FAILED!"
+else
+    echo "SUCCEEDED!"
+fi

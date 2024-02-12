@@ -1,0 +1,76 @@
+#!/usr/bin/env bash
+
+usage() { echo "usage: $0 -r receptor -o output_dir" 1>&2 ; }
+
+while getopts ":hr:o:" opt
+do
+    case "${opt}" in
+        h)  usage
+            exit 1 ;;
+        r)  rec_path=${OPTARG} ;;
+        o)  out_path=${OPTARG} ;;
+        \?) echo "Error: invalid option -${OPTARG}" 1>&2
+            exit 1 ;;
+        :)  echo "Error: missing argument for -${OPTARG}" 1>&2
+            exit 1 ;;
+        *)  usage
+            exit 1 ;;
+    esac
+done
+
+if [ "${rec_path}" == "" ] || [ "${out_path}" == "" ]
+then
+    echo "Error: options -r -o should be specified!" 1>&2
+    usage
+    exit 1
+fi
+
+if [ ! -f "${rec_path}" ]
+then
+    echo "Error: receptor file ${rec_path} not found!" 1>&2
+    exit 1
+fi
+
+if [ ! "${rec_path##*.}" == "pdb" ]
+then
+    echo "Error: receptor file ${rec_path} must have .pdb extension." 1>&2
+    exit 1
+fi
+
+# get file name and remove extension
+rec_name=$(basename "${rec_path}")
+rec="${rec_name%.*}"
+
+amber_dir=${out_path}/
+echo "output will be saved into ${amber_dir}"
+mkdir -p "${amber_dir}"
+
+echo "*************************************************************************"
+echo "* -> preparing for ${rec}"
+echo "*************************************************************************"
+
+cp "${rec_path}" "${amber_dir}"
+cd "${amber_dir}" || exit
+
+echo "#####################"
+echo "# running pdb4amber #"
+echo "#####################"
+pdb4amber -i "${rec}.pdb" -o "${rec}.amber.pdb" --dry --reduce --logfile=stdout
+# for DNA cases, pdb4amber can not correctly model the missing 2'-OH group
+#pdb4amber -i "${rec}.pdb" -o "${rec}.amber.pdb" --dry --logfile=stdout
+
+{
+    echo "source leaprc.RNA.OL3"
+    # echo "source leaprc.gaff2"
+    echo "rec = loadpdb \"${rec}.amber.pdb\""
+    # echo "cpd = loadmol2 ${cpd}.amber.mol2"
+    echo "savemol2 rec \"${rec}.amber.mol2\" 1"
+    echo "quit"
+} > leap.in
+
+echo "#################"
+echo "# running tleap #"
+echo "#################"
+tleap -f leap.in
+cd - > /dev/null || exit
+

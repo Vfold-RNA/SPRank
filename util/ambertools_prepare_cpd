@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+
+usage() { echo "usage: $0 -c compound -o output_dir [-d]" 1>&2 ; echo "note: using option [-d] will set '-dr no' in antechamber" 1>&2 ; }
+
+while getopts ":hc:o:d" opt
+do
+    case "${opt}" in
+        h)  usage
+            exit 1 ;;
+        c)  cpd_path=${OPTARG} ;;
+        o)  out_path=${OPTARG} ;;
+        d)  dr_mode="false" ;;
+        \?) echo "Error: invalid option -${OPTARG}" 1>&2
+            exit 1 ;;
+        :)  echo "Error: missing argument for -${OPTARG}" 1>&2
+            exit 1 ;;
+        *)  usage
+            exit 1 ;;
+    esac
+done
+
+if [ "${cpd_path}" == "" ] || [ "${out_path}" == "" ]
+then
+    echo "Error: options -c -o should be specified!" 1>&2
+    usage
+    exit 1
+fi
+
+if [ ! -f "${cpd_path}" ]
+then
+    echo "Error: compound file ${cpd_path} not found!" 1>&2
+    exit 1
+fi
+
+if [ ! "${cpd_path##*.}" == "sdf" ]
+then
+    echo "Error: compound file ${cpd_path} must have .sdf extension." 1>&2
+    exit 1
+fi
+
+# get file name and remove extension
+cpd_name=$(basename "${cpd_path}")
+cpd="${cpd_name%.*}"
+
+amber_dir=${out_path}/
+echo "output will be saved into ${amber_dir}"
+mkdir -p "${amber_dir}"
+
+echo "*************************************************************************"
+echo "* -> preparing for ${cpd}"
+echo "*************************************************************************"
+
+cp "${cpd_path}" "${amber_dir}"
+cd "${amber_dir}" || exit
+
+echo "#######################"
+echo "# running antechamber #"
+echo "#######################"
+# no charge
+if [ "${dr_mode}" == "false" ]
+then
+    echo "***using -dr no"
+    antechamber -i "${cpd}.sdf" -fi sdf -o "${cpd}.amber.mol2" -fo mol2 -s 2 -at gaff2 -dr no
+else
+    antechamber -i "${cpd}.sdf" -fi sdf -o "${cpd}.amber.mol2" -fo mol2 -s 2 -at gaff2
+fi
