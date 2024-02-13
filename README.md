@@ -38,7 +38,7 @@ export SPRANK_HOME=${HOME}/SPRank
 sprank -h
 ```
 
-#### Run SPRank for example case
+#### Run SPRank for example cases
 ```
 cd ${HOME}/SPRank/example && chmod +x ./run_example && ./run_example
 ```
