@@ -28,14 +28,18 @@ cd ${HOME}/SPRank && make
 ```
 put the following environment variable to your *.bashrc*
 ```
-export SPRANK_HOME=${HOME}/SPRank
+echo "export SPRANK_HOME=${HOME}/SPRank" >> ${HOME}/.bashrc
+```
+and source it 
+```
+source ${HOME}/.bashrc
 ```
 
 ## Using SPRank
 
 #### Check SPRank options
 ```
-sprank -h
+${SPRANK_HOME}/bin/sprank -h
 ```
 
 #### Run SPRank for example cases
