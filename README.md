@@ -8,12 +8,18 @@ For compiling and running */bin/sprank*
 * GNU Make 4.3
 * gcc/g++ (version 11.4.0)
 
-For running the */util/check_atom_order*
+For running */util/check_atom_order*
 * Python 3.11.5
 * NumPy 1.26.0
 
-For running the */util/ambertools_prepare_rec* and */util/ambertools_prepare_cpd*
+For running */util/ambertools_prepare_rec* and */util/ambertools_prepare_cpd*
 * AmberTools22
+
+For running random forest model attached in the **Releases**
+* scikit-learn 1.5.0
+* Polars 0.20.4
+* NumPy 1.26.0
+* Matplotlib 3.7.2
 
 ## Installation
 
