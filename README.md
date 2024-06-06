@@ -87,6 +87,8 @@ cd ${HOME}/SPRank/data/
 sha256sum --check checksum.txt
 ```
 
-## Software References
+## References
 
-[1] xxxx
+[1] Yuanzhe Zhou, Yangwei Jiang, and Shi-Jie Chen. 
+SPRank - A knowledge-based scoring function for RNA-ligand pose prediction and virtual screening. 
+2024. *submitted*
