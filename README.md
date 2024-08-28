@@ -89,6 +89,7 @@ sha256sum --check checksum.txt
 
 ## References
 
-[1] Yuanzhe Zhou, Yangwei Jiang, and Shi-Jie Chen. 
-SPRank - A knowledge-based scoring function for RNA-ligand pose prediction and virtual screening. 
-2024. *submitted*
+[1] Zhou Y, Jiang YW, Chen SJ.
+**SPRank - A Knowledge-Based Scoring Function for RNA-Ligand Pose Prediction and Virtual Screening.**
+*Journal of Chemical Theory and Computation.*
+2024 Aug. doi: 10.1021/acs.jctc.4c00681.
