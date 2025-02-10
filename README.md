@@ -4,22 +4,22 @@
 The following are tested system settings.
 
 For compiling and running */bin/sprank*
-* GNU/Linux x86_64 (Ubuntu 22.04.3 LTS kernel 5.15.0-91-generic)
+* GNU/Linux x86_64 (Ubuntu 22.04 LTS)
 * GNU Make 4.3
 * gcc/g++ (version 11.4.0)
 
-For running */util/check_atom_order*
-* Python 3.11.5
-* NumPy 1.26.0
+For running */bin/check_atom_order*
+* Python 3.9.21
+* NumPy 2.0.2
 
-For running */util/ambertools_prepare_rec* and */util/ambertools_prepare_cpd*
+For running */bin/ambertools_prepare_rec* and */bin/ambertools_prepare_cpd*
 * AmberTools22
 
 For running random forest model attached in the **Releases**
 * scikit-learn 1.5.0
-* Polars 0.20.4
-* NumPy 1.26.0
-* Matplotlib 3.7.2
+* Polars 1.17.1
+* NumPy 2.0.2
+* Matplotlib 3.9.4
 
 ## Installation
 
@@ -36,23 +36,29 @@ put the following environment variable to your *.bashrc*
 ```
 echo "export SPRANK_HOME=${HOME}/SPRank" >> ${HOME}/.bashrc
 ```
-and source it 
+and source it
 ```
 source ${HOME}/.bashrc
 ```
 
-## Using SPRank
+## Using SPRank and SPRank-RF
 
 #### Check SPRank options
 ```
 ${SPRANK_HOME}/bin/sprank -h
 ```
 
-#### Run SPRank for example cases
+#### or check SPRank-RF options
+```
+${SPRANK_HOME}/bin/sprank-rf -h
+```
+
+#### Run SPRank and SPRank-RF for example cases
 ```
 cd ${HOME}/SPRank/example && chmod +x ./run_example && ./run_example
 ```
-The predicted scores will be saved in the corresponding folders as `score.dat`.
+The predicted scores will be saved in the corresponding folders as 
+`score.dat` for *sprank* and `score_random_forest.dat` for *sprank-rf*.
 By default, the script does not run AmberTools22 to prepare the input receptor and compound.
 You can remove the comments in `./run_example` to prepare the input files using AmberTools22.
 
@@ -65,6 +71,17 @@ You can remove the comments in `./run_example` to prepare the input files using 
 -p <compound poses>   # path to poses sampled by docking software,
                         to be scored by SPRank (in mol2 format,
                         the order of the heavy atoms should be same as the target compound)
+```
+
+## SPRank-RF command line arguments
+```
+-r <receptor>         # path to target RNA (in amber mol2 format, must contain hydrogens)
+-c <target compound>  # path to target compound (in amber mol2 format, must contain hydrogens 
+                        and bond table (i.e., "@<TRIPOS>BOND" record))
+-p <compound poses>   # path to poses sampled by docking software,
+                        to be scored by SPRank (in mol2 format,
+                        the order of the heavy atoms should be same as the target compound)
+-o <output>           # path to save the RandomForest predicted scores
 ```
 
 ## Download data

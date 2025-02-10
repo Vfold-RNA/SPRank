@@ -1,0 +1,100 @@
+#!/usr/bin/env python3
+
+import os
+import joblib
+import argparse
+import numpy as np
+import polars as pl
+import subprocess
+#from sklearn import linear_model
+#from sklearn.ensemble import RandomForestRegressor
+
+assert 'SPRANK_HOME' in os.environ, f'environment variable SPRANK_HOME is empty'
+sprank_home = os.environ['SPRANK_HOME']
+sprank_cmd = f'{sprank_home}/bin/sprank'
+model_home = f'{sprank_home}/random-forest/model/'
+assert os.path.exists(sprank_cmd), 'can not find ${SPRANK_HOME}/bin/sprank'
+
+parser = argparse.ArgumentParser(description='SPRank RandomForest model')
+parser.add_argument('-r', '--rec', type=str, required=True, help='path to target RNA (in amber mol2 format, must contain hydrogens)')
+parser.add_argument('-c', '--cpd', type=str, required=True, help='path to target compound (in amber mol2 format, must contain hydrogens and bond table (i.e., "@<TRIPOS>BOND" record))')
+parser.add_argument('-p', '--pose', type=str, required=True, help='path to poses sampled by docking software, to be scored by SPRank (in mol2 format, the order of the heavy atoms should be same as the target compound)')
+parser.add_argument('-o', '--output', type=str, required=True, help='path to save the RandomForest predicted scores')
+
+args = parser.parse_args()
+i_rec, i_cpd, i_pose, o_score = args.rec, args.cpd, args.pose, args.output
+tmp_score_path = f'{o_score}.tmp'
+
+assert os.path.exists(i_rec), f'input receptor -> {i_rec} does not exist'
+assert os.path.exists(i_cpd), f'input compound -> {i_cpd} does not exist'
+assert os.path.exists(i_pose), f'input pose -> {i_pose} does not exist'
+
+with open(tmp_score_path, 'w') as tmp_score_f:
+    run_sprank_proc = subprocess.Popen([sprank_cmd, '-r', i_rec, '-c', i_cpd, '-p', i_pose], stdout=tmp_score_f, stderr=subprocess.PIPE)
+stdout, stderr = run_sprank_proc.communicate()
+#stdout_str = stdout.decode("UTF-8").strip()
+stderr_str = stderr.decode("UTF-8").strip()
+#if stdout_str != '':
+#    print('SPRank standard output:')
+#    print(stdout_str, flush=True)
+if stderr_str != '':
+    print('encounter error when running SPRank:')
+    print(stderr_str, flush=True)
+
+score_dict = {'pose': [], 'Pairwise': [], 'SASA': [], 'AromaC': []}
+score_flag = False
+score_strs = []
+with open(tmp_score_path) as f:
+    for line in f:
+        l = line.strip()
+        if l[0:21] == '#pose pair sasa stack':
+            score_flag = True
+            continue
+        if not score_flag:
+            score_strs.append(line)
+        if score_flag:
+            items = l.split()
+            assert len(items) == 4
+            score_dict['pose'].append(items[0])
+            score_dict['Pairwise'].append(float(items[1]))
+            score_dict['SASA'].append(float(items[2]))
+            score_dict['AromaC'].append(float(items[3]))
+assert len(score_dict['pose']) == len(score_dict['Pairwise'])
+assert len(score_dict['pose']) == len(score_dict['SASA'])
+assert len(score_dict['pose']) == len(score_dict['AromaC'])
+
+df_score = pl.DataFrame(score_dict)
+#print(df_score.head(5))
+
+feature_names = joblib.load(f'{model_home}/feature_names.joblib')
+#print(feature_names)
+df_X = df_score.select(pl.col(feature_names))
+
+X = df_X.to_numpy()
+X_mean = joblib.load(f'{model_home}/means.joblib')
+X_std = joblib.load(f'{model_home}/stds.joblib')
+X = ( X - X_mean ) / X_std
+#print('X.shape:', X.shape)
+
+rf_regr = joblib.load(f'{model_home}/random_forest.joblib')
+pred_y = rf_regr.predict(X)
+#print(pred_y.shape)
+
+df_score = df_score.with_columns(
+    pl.lit(
+        pl.Series(f'rf', pred_y)
+    )
+)
+df_score = df_score.rename({'pose': '#pose'})
+df_score = df_score.rename({'Pairwise': 'pair'})
+df_score = df_score.rename({'SASA': 'sasa'})
+df_score = df_score.rename({'AromaC': 'stack'})
+
+with open(o_score, 'w') as f:
+    for score_str in score_strs:
+        f.write(score_str)
+
+with open(o_score, 'a') as f:
+    df_score.write_csv(f, separator=' ', float_scientific=False, float_precision=3)
+
+os.remove(tmp_score_path)
