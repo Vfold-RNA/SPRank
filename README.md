@@ -62,6 +62,18 @@ The predicted scores will be saved in the corresponding folders as
 By default, the script does not run AmberTools22 to prepare the input receptor and compound.
 You can remove the comments in `./run_example` to prepare the input files using AmberTools22.
 
+#### Run conversion scripts for example cases
+```
+cd ${HOME}/SPRank/example && chmod +x ./run_conversion_test && ./run_conversion_test
+```
+This script will run `convert_rdock_pose` and `convert_vina_pose` to convert 
+rDock and AutoDock Vina generated poses to mol2 format compatible with `sprank` and `sprank-rf`. 
+After running the script, the predicted scores will be saved in the corresponding folders as 
+`*_pose_score.dat` for `sprank` and `*_pose_random_forest_score.dat` for `sprank-rf`, 
+where * will be rdock and vina. 
+By default, the script does not run AmberTools22 to prepare the input receptor and compound.
+You can remove the comments in `./run_conversion_test` to prepare the input files using AmberTools22.
+
 
 ## SPRank command line arguments
 ```
