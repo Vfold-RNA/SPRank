@@ -7,7 +7,7 @@ for name in "1AM0-A-41-AMP" "3D2X-A-85-D2X"; do
   echo "---------------------------"
   # ${SPRANK_HOME}/bin/ambertools_prepare_rec -r ${name}/rec.pdb -o ${name}/amber
   # ${SPRANK_HOME}/bin/ambertools_prepare_cpd -c ${name}/lig_charged.sdf -o ${name}/amber
-  ${SPRANK_HOME}/bin/check_atom_order -c ${name}/amber/lig_charged.amber.mol2 -p ${name}/pose/pose.mol2
+  ${SPRANK_HOME}/bin/check_atom_order -c ${name}/amber/lig_charged.amber.mol2 --c_mol2_type amber -p ${name}/pose/pose.mol2 --p_mol2_type sybyl
   ${SPRANK_HOME}/bin/sprank -r ${name}/amber/rec.amber.mol2 -c ${name}/amber/lig_charged.amber.mol2 -p ${name}/pose/pose.mol2 &>${name}/score.dat
   ${SPRANK_HOME}/bin/sprank-rf -r ${name}/amber/rec.amber.mol2 -c ${name}/amber/lig_charged.amber.mol2 -p ${name}/pose/pose.mol2 -o ${name}/score_random_forest.dat
 

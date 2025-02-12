@@ -18,6 +18,8 @@ util:
 	cp ./util/ambertools_prepare_cpd ./bin/
 	cp ./util/ambertools_prepare_rec ./bin/
 	cp ./util/check_atom_order ./bin/
+	cp ./util/convert_rdock_pose ./bin/
+	cp ./util/convert_vina_pose ./bin/
 
 clear:
 	rm -f bin/sprank
@@ -26,3 +28,5 @@ clear:
 	rm -r bin/ambertools_prepare_cpd
 	rm -r bin/ambertools_prepare_rec
 	rm -r bin/check_atom_order
+	rm -r bin/convert_rdock_pose
+	rm -r bin/convert_vina_pose

@@ -1,0 +1,219 @@
+#!/usr/bin/env python3
+#import math
+import os
+import os.path
+import sys
+import shutil
+import numpy as np
+import argparse
+import datetime
+
+parser = argparse.ArgumentParser(description='Convert Vina generated poses to mol2')
+parser.add_argument('-r', '--r_path', type=str, required=True, help='path to the reference compound file, in mol2 format')
+parser.add_argument('-p', '--p_path', type=str, required=True, help='path to the Vina generated pose file, in pdbqt format')
+parser.add_argument('-o', '--o_path', type=str, required=True, help='path for saving the converted pose file, in mol2 format')
+args = parser.parse_args()
+r_path, p_path, o_path = args.r_path, args.p_path, args.o_path
+
+assert os.path.exists(r_path), f'reference compound file -> {r_path} does not exist'
+assert os.path.exists(p_path), f'Vina pose file -> {p_path} does not exist'
+assert r_path.endswith('.mol2'), f'reference compound file needs to be in mol2 format (i.e., has mol2 extension)'
+assert p_path.endswith('.pdbqt'), f'Vina pose file needs to be in pdbqt format (i.e., has pdbqt extension)'
+assert o_path.endswith('.mol2'), f'converted file needs to be in mol2 format (i.e., has mol2 extension)'
+
+gaff2_to_elem_dict = {
+    "h2": "H", "h3": "H", "h4": "H", "h5": "H", "ha": "H", "hc": "H", "hn": "H", "ho": "H", "hp": "H", "hs": "H", "hw": "H", "hx": "H",
+    "c" : "C", "cs": "C", "c1": "C", "c2": "C", "c3": "C", "ca": "C", "cp": "C", "cq": "C", "cc": "C", "cd": "C",
+    "ce": "C", "cf": "C", "cg": "C", "ch": "C", "cx": "C", "cy": "C", "cu": "C", "cv": "C", "cz": "C", "h1": "H",
+    "n" : "N", "n1": "N", "n2": "N", "n3": "N", "n4": "N", "na": "N", "nb": "N", "nc": "N", "nd": "N", "ne": "N",
+    "nf": "N", "nh": "N", "no": "N", "ns": "N", "nt": "N", "nx": "N", "ny": "N", "nz": "N", "n+": "N", "nu": "N",
+    "nv": "N", "n7": "N", "n8": "N", "n9": "N", "ni": "N", "nj": "N", "nk": "N", "nl": "N", "nm": "N", "nn": "N",
+    "np": "N", "nq": "N", "n5": "N", "n6": "N",
+    "o" : "O", "oh": "O", "os": "O", "op": "O", "oq": "O", "ow": "O",
+    "p2": "P", "p3": "P", "p4": "P", "p5": "P", "pb": "P", "pc": "P", "pd": "P", "pe": "P", "pf": "P", "px": "P",
+    "py": "P",
+    "s" : "S", "s2": "S", "s4": "S", "s6": "S", "sh": "S", "ss": "S", "sp": "S", "sq": "S", "sx": "S", "sy": "S",
+    "f" : "F",
+    "cl": "CL",
+    "br": "BR",
+    "i" : "I",
+    "Cu": "Cu"
+}
+
+def split_bundle_pdbqt(file):
+    with open(file) as f:
+        docked_pdbqt_lines = f.readlines()
+    pose_content_list = []
+    for line in docked_pdbqt_lines:
+        if line[0:5] == 'MODEL':
+            pose_content_list.append([])
+        if len(pose_content_list) != 0:
+            pose_content_list[-1].append(line)
+    return pose_content_list
+
+pdbqt_h_type_set = set(['H', 'HD', 'HS'])
+def parse_single_pdbqt_lines(lines):
+    mol_dict = {'pose_id': None, 'atoms':[], 'pdbqt_types':[], 'residues':[], 'coords':[], 'charges':[]}
+    for line in lines:
+        l = line.strip()
+        if l[0:5] == 'MODEL':
+            mol_dict['pose_id'] = int(l.split()[1])
+        if l[0:4] == "ATOM" or l[0:6] == "HETATM":
+            x = float(l[30:38])
+            y = float(l[38:46])
+            z = float(l[46:54])
+            #record str[0:6]
+            #serial = int([6:11])
+            atom_name = l[12:16].strip()
+            #altloc  str(16
+            resname = l[17:20].strip()
+            #chainid str[21]
+            #resseq int[22:26]
+            #insertion
+            charge = float(l[70:76].strip())
+            pdbqt_type = l[77:79].strip()
+            if pdbqt_type in pdbqt_h_type_set:
+                continue
+            mol_dict['atoms'].append(atom_name)
+            mol_dict['pdbqt_types'].append(pdbqt_type)
+            mol_dict['residues'].append(resname)
+            mol_dict['coords'].append(np.array((x, y, z)))
+            mol_dict['charges'].append(charge)
+    return mol_dict
+
+def read_bundle_pdbqt(file):
+    mol_list = []
+    pose_str_list = split_bundle_pdbqt(file)
+    for pose_str in pose_str_list[0:100]:
+        mol_list.append(parse_single_pdbqt_lines(pose_str))
+    return mol_list
+
+# basic function is just to remove hydrogens and their bonds
+def get_mol2_template_dict(in_mol2):
+    with open(in_mol2) as f:
+        mol2_lines = f.readlines()
+    block_dict = {'@<TRIPOS>MOLECULE': [], '@<TRIPOS>ATOM': [], '@<TRIPOS>BOND': [], 'Other': []}
+    block_id = None
+    for line in mol2_lines:
+        if line[0:17] == '@<TRIPOS>MOLECULE':
+            block_id = '@<TRIPOS>MOLECULE'
+            continue
+        elif line[0:13] == '@<TRIPOS>ATOM':
+            block_id = '@<TRIPOS>ATOM'
+            continue
+        elif line[0:13] == '@<TRIPOS>BOND':
+            block_id = '@<TRIPOS>BOND'
+            continue
+        elif line[0:9] == '@<TRIPOS>':
+            block_id = 'Other'
+            continue
+
+        if block_id != None:
+            if line.strip() == '':
+                if block_id == '@<TRIPOS>MOLECULE':
+                    block_dict[block_id].append(line)
+            else:
+                block_dict[block_id].append(line)
+
+    # assert(len(block_dict['@<TRIPOS>MOLECULE']) == 6)
+    atom_num, bond_num = int(block_dict['@<TRIPOS>MOLECULE'][1].split()[0]), int(block_dict['@<TRIPOS>MOLECULE'][1].split()[1])
+    assert(len(block_dict['@<TRIPOS>ATOM']) == (atom_num))
+    assert(len(block_dict['@<TRIPOS>BOND']) == (bond_num))
+
+    old_to_new_atom_id = {}
+    template_dict = {'@<TRIPOS>MOLECULE': [], '@<TRIPOS>ATOM': [], '@<TRIPOS>BOND': []}
+    hydrogen_id_set = set()
+    new_atom_id = 0
+    for line in block_dict['@<TRIPOS>ATOM']:
+        items = line.strip().split()
+        atom_id = int(items[0])
+        atom_name = items[1]
+        x, y, z = float(items[2]), float(items[3]), float(items[4])
+        mol2_type = items[5]
+        element_type = gaff2_to_elem_dict[mol2_type]
+        resi = items[6]
+        resn = items[7]
+        charge = items[8]
+
+        if element_type == 'H':
+            hydrogen_id_set.add(atom_id)
+            continue
+        new_atom_id += 1
+        template_dict['@<TRIPOS>ATOM'].append((new_atom_id, atom_name, x, y, z, mol2_type, resi, resn, charge, element_type))
+        old_to_new_atom_id[atom_id] = new_atom_id
+
+    new_bond_id = 0
+    for line in block_dict['@<TRIPOS>BOND']:
+        items = line.strip().split()
+        bond_id, first_bond_atom_id, second_bond_atom_id, bond_type = int(items[0]), int(items[1]), int(items[2]), items[3]
+        if first_bond_atom_id in hydrogen_id_set or second_bond_atom_id in hydrogen_id_set:
+            continue
+        new_bond_id += 1
+        template_dict['@<TRIPOS>BOND'].append((new_bond_id, old_to_new_atom_id[first_bond_atom_id], old_to_new_atom_id[second_bond_atom_id], bond_type))
+
+    assert( (len(hydrogen_id_set)+len(template_dict['@<TRIPOS>ATOM'])) == atom_num )
+    assert( (len(hydrogen_id_set)+len(template_dict['@<TRIPOS>BOND'])) == bond_num ) # usually hydrogen should only has one bond
+    template_dict['@<TRIPOS>MOLECULE'] = block_dict['@<TRIPOS>MOLECULE']
+    count_items = template_dict['@<TRIPOS>MOLECULE'][1].split()
+    count_items[0] = str(len(template_dict['@<TRIPOS>ATOM']))
+    count_items[1] = str(len(template_dict['@<TRIPOS>BOND']))
+    template_dict['@<TRIPOS>MOLECULE'][1] = ("    ".join(count_items)) + '\n'
+    return template_dict
+
+def write_coords_to_mol2_template(pose_id, coords, mol2_template_dict, save_path, fmode='w'):
+    with open(save_path, fmode) as f:
+        # first write @<TRIPOS>MOLECULE
+        f.write('@<TRIPOS>MOLECULE\n')
+        f.write(f'vina_{pose_id}\n')
+        for line in mol2_template_dict['@<TRIPOS>MOLECULE'][1:]:
+            f.write(line)
+
+        # second write @<TRIPOS>ATOM
+        f.write('@<TRIPOS>ATOM\n')
+        for coord, items in zip(coords, mol2_template_dict['@<TRIPOS>ATOM']):
+            f.write(f'{items[0]:>7d} {items[1]:<6s}    {coord[0]:>8.3f}  {coord[1]:>8.3f}  {coord[2]:>8.3f} {items[5]:<6s} {items[6]:<3s} {items[7]:<6s} {items[8]:>8s}\n')
+
+        # third write @<TRIPOS>BOND
+        f.write('@<TRIPOS>BOND\n')
+        for items in mol2_template_dict['@<TRIPOS>BOND']:
+            f.write(f'{items[0]:>6d} {items[1]:>6d} {items[2]:>6d} {items[3]:<4s}\n')
+
+def dump_vina_pose_to_mol2(mol_dict, mol2_template_dict, save_path, fmode='w'):
+    pose_id, atoms, pdbqt_types, coords = mol_dict['pose_id'], mol_dict['atoms'], mol_dict['pdbqt_types'], mol_dict['coords']
+    atom_name_to_index = {}
+    for atom_index, atom_name in enumerate(atoms):
+        if atom_name in atom_name_to_index:
+            log.write(f'atom {atom_name} duplicate, id {atom_index+1}!')
+            exit()
+        else:
+            atom_name_to_index[atom_name] = atom_index
+
+    # need reorder atoms
+    re_atoms = []
+    re_pdbqt_types = []
+    re_coords = []
+    for items in mol2_template_dict['@<TRIPOS>ATOM']:
+        atom_name = items[1]
+        atom_index = atom_name_to_index[atom_name]
+        re_atoms.append(atoms[atom_index])
+        re_pdbqt_types.append(pdbqt_types[atom_index])
+        re_coords.append(coords[atom_index])
+    assert(len(re_atoms) == len(atoms))
+    assert(len(re_pdbqt_types) == len(pdbqt_types))
+    assert(len(re_coords) == len(coords))
+
+    assert('-'.join(re_atoms) == '-'.join(items[1] for items in mol2_template_dict['@<TRIPOS>ATOM']))
+    write_coords_to_mol2_template(pose_id, re_coords, mol2_template_dict, save_path, fmode=fmode)
+    # template_coords = [np.array((items[2:5]), dtype=float) for items in mol2_template_dict['@<TRIPOS>ATOM']]
+    # return cal_rmsd(template_coords, re_coords)
+
+
+if __name__ == '__main__':
+    # checking to make sure pdbqt file does not exist before converting
+    assert not os.path.exists(o_path), f'{o_path} already exists before converting!'
+    mol2_template_dict = get_mol2_template_dict(r_path)
+    vina_mol_list = read_bundle_pdbqt(p_path)
+    print(f'load {len(vina_mol_list)} poses from {p_path}', flush=True)
+    for vina_mol_dict in vina_mol_list:
+        dump_vina_pose_to_mol2(vina_mol_dict, mol2_template_dict, o_path, fmode='a')
+    print('completed.', flush=True)

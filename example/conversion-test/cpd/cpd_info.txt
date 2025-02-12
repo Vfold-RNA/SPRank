@@ -1,0 +1,11 @@
+#cpd
+lig_absFC:  1.00
+lig_sumFC:  1.00
+lig_sumPC:  1.00
+lig_openeye_torsion:  8
+lig_rdkit_torsion_1:  8
+lig_rdkit_torsion_2:  8
+lig_vina_torsion:  9
+lig_H_donor_idx:  26 27
+lig_H_acceptor_idx:  26 28 29 30 31
+lig_aromatic_idx:  0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 25

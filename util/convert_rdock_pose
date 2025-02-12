@@ -1,0 +1,199 @@
+#!/usr/bin/env python3
+import os
+import os.path
+import sys
+import shutil
+import numpy as np
+import argparse
+import datetime
+
+parser = argparse.ArgumentParser(description='Convert rDock generated poses to mol2')
+parser.add_argument('-r', '--r_path', type=str, required=True, help='path to the reference compound file, in mol2 format')
+parser.add_argument('-p', '--p_path', type=str, required=True, help='path to the rDock generated pose file, in sd format')
+parser.add_argument('-o', '--o_path', type=str, required=True, help='path for saving the converted pose file, in mol2 format')
+args = parser.parse_args()
+r_path, p_path, o_path = args.r_path, args.p_path, args.o_path
+
+assert os.path.exists(r_path), f'reference compound file -> {r_path} does not exist'
+assert os.path.exists(p_path), f'rDock pose file -> {p_path} does not exist'
+assert r_path.endswith('.mol2'), f'reference compound file needs to be in mol2 format (i.e., has mol2 extension)'
+assert p_path.endswith('.sd') or p_path.endswith('.sdf'), f'rDock pose file needs to be in sd/sdf format (i.e., has sd/sdf extension)'
+assert o_path.endswith('.mol2'), f'converted file needs to be in mol2 format (i.e., has mol2 extension)'
+
+gaff2_to_elem_dict = {
+    "h2": "H", "h3": "H", "h4": "H", "h5": "H", "ha": "H", "hc": "H", "hn": "H", "ho": "H", "hp": "H", "hs": "H", "hw": "H", "hx": "H",
+    "c" : "C", "cs": "C", "c1": "C", "c2": "C", "c3": "C", "ca": "C", "cp": "C", "cq": "C", "cc": "C", "cd": "C",
+    "ce": "C", "cf": "C", "cg": "C", "ch": "C", "cx": "C", "cy": "C", "cu": "C", "cv": "C", "cz": "C", "h1": "H",
+    "n" : "N", "n1": "N", "n2": "N", "n3": "N", "n4": "N", "na": "N", "nb": "N", "nc": "N", "nd": "N", "ne": "N",
+    "nf": "N", "nh": "N", "no": "N", "ns": "N", "nt": "N", "nx": "N", "ny": "N", "nz": "N", "n+": "N", "nu": "N",
+    "nv": "N", "n7": "N", "n8": "N", "n9": "N", "ni": "N", "nj": "N", "nk": "N", "nl": "N", "nm": "N", "nn": "N",
+    "np": "N", "nq": "N", "n5": "N", "n6": "N",
+    "o" : "O", "oh": "O", "os": "O", "op": "O", "oq": "O", "ow": "O",
+    "p2": "P", "p3": "P", "p4": "P", "p5": "P", "pb": "P", "pc": "P", "pd": "P", "pe": "P", "pf": "P", "px": "P",
+    "py": "P",
+    "s" : "S", "s2": "S", "s4": "S", "s6": "S", "sh": "S", "ss": "S", "sp": "S", "sq": "S", "sx": "S", "sy": "S",
+    "f" : "F",
+    "cl": "CL",
+    "br": "BR",
+    "i" : "I",
+    "Cu": "Cu"
+}
+
+def split_bundle_sd(file):
+    with open(file) as f:
+        docked_sd_lines = f.readlines()
+    pose_content_list = [[]]
+    for line in docked_sd_lines:
+        pose_content_list[-1].append(line)
+        if line.find('$$$$') != -1:
+            pose_content_list.append([])
+    if len(''.join(x.strip() for x in pose_content_list[-1])) == 0:
+        pose_content_list = pose_content_list[:-1]
+    return pose_content_list
+
+def parse_single_sdf_lines(lines):
+    flag = False
+    charge_dict = {'7': -3, '6': -2, '5': -1, '0': 0, '3': 1, '2': 2, '1': 3, '4': None} # '4' is doublet radical
+    mol_dict = {'pose_id': None, 'atoms':[], 'sdf_types':[], 'coords':[], 'charges':[]}
+    num_of_atom = 0
+    num_of_bond = 0
+    heavy_atom_num = 0
+    for line_index, line in enumerate(lines):
+        l = line
+        if line_index < 3:
+            continue
+        elif line_index == 3:
+            num_of_atom, num_of_bond = int(l[0:3]), int(l[3:6])
+            flag = True
+        elif flag and (line_index - 3) <= num_of_atom:
+            atom_name = l[31:34].strip()
+            if atom_name == 'H':
+                continue
+            heavy_atom_num += 1
+            x, y, z = float(l[0:10]), float(l[10:20]), float(l[20:30])
+            sdf_type = atom_name
+            charge = charge_dict[l[36:39].strip()]
+
+            mol_dict['atoms'].append(atom_name)
+            mol_dict['sdf_types'].append(sdf_type)
+            mol_dict['coords'].append(np.array((x, y, z)))
+            mol_dict['charges'].append(charge)
+    assert(len(mol_dict['atoms']) == heavy_atom_num)
+    return mol_dict
+
+def read_bundle_sdf(file):
+    mol_list = []
+    pose_str_list = split_bundle_sd(file)
+    for pose_idx, pose_str in enumerate(pose_str_list):
+        mol_list.append(parse_single_sdf_lines(pose_str))
+        mol_list[-1]['pose_id'] = (pose_idx+1)
+    return mol_list
+
+# basic function is just to remove hydrogens and their bonds
+def get_mol2_template_dict(in_mol2):
+    with open(in_mol2) as f:
+        mol2_lines = f.readlines()
+    block_dict = {'@<TRIPOS>MOLECULE': [], '@<TRIPOS>ATOM': [], '@<TRIPOS>BOND': [], 'Other': []}
+    block_id = None
+    for line in mol2_lines:
+        if line[0:17] == '@<TRIPOS>MOLECULE':
+            block_id = '@<TRIPOS>MOLECULE'
+            continue
+        elif line[0:13] == '@<TRIPOS>ATOM':
+            block_id = '@<TRIPOS>ATOM'
+            continue
+        elif line[0:13] == '@<TRIPOS>BOND':
+            block_id = '@<TRIPOS>BOND'
+            continue
+        elif line[0:9] == '@<TRIPOS>':
+            block_id = 'Other'
+            continue
+
+        if block_id != None:
+            if line.strip() == '':
+                if block_id == '@<TRIPOS>MOLECULE':
+                    block_dict[block_id].append(line)
+            else:
+                block_dict[block_id].append(line)
+
+    # assert(len(block_dict['@<TRIPOS>MOLECULE']) == 6)
+    atom_num, bond_num = int(block_dict['@<TRIPOS>MOLECULE'][1].split()[0]), int(block_dict['@<TRIPOS>MOLECULE'][1].split()[1])
+    assert(len(block_dict['@<TRIPOS>ATOM']) == (atom_num))
+    assert(len(block_dict['@<TRIPOS>BOND']) == (bond_num))
+
+    old_to_new_atom_id = {}
+    template_dict = {'@<TRIPOS>MOLECULE': [], '@<TRIPOS>ATOM': [], '@<TRIPOS>BOND': []}
+    hydrogen_id_set = set()
+    new_atom_id = 0
+    for line in block_dict['@<TRIPOS>ATOM']:
+        items = line.strip().split()
+        atom_id = int(items[0])
+        atom_name = items[1]
+        x, y, z = float(items[2]), float(items[3]), float(items[4])
+        mol2_type = items[5]
+        element_type = gaff2_to_elem_dict[mol2_type]
+        resi = items[6]
+        resn = items[7]
+        charge = items[8]
+
+        if element_type == 'H':
+            hydrogen_id_set.add(atom_id)
+            continue
+        new_atom_id += 1
+        template_dict['@<TRIPOS>ATOM'].append((new_atom_id, atom_name, x, y, z, mol2_type, resi, resn, charge, element_type))
+        old_to_new_atom_id[atom_id] = new_atom_id
+
+    new_bond_id = 0
+    for line in block_dict['@<TRIPOS>BOND']:
+        items = line.strip().split()
+        bond_id, first_bond_atom_id, second_bond_atom_id, bond_type = int(items[0]), int(items[1]), int(items[2]), items[3]
+        if first_bond_atom_id in hydrogen_id_set or second_bond_atom_id in hydrogen_id_set:
+            continue
+        new_bond_id += 1
+        template_dict['@<TRIPOS>BOND'].append((new_bond_id, old_to_new_atom_id[first_bond_atom_id], old_to_new_atom_id[second_bond_atom_id], bond_type))
+
+    assert( (len(hydrogen_id_set)+len(template_dict['@<TRIPOS>ATOM'])) == atom_num )
+    assert( (len(hydrogen_id_set)+len(template_dict['@<TRIPOS>BOND'])) == bond_num ) # usually hydrogen should only has one bond
+    template_dict['@<TRIPOS>MOLECULE'] = block_dict['@<TRIPOS>MOLECULE']
+    count_items = template_dict['@<TRIPOS>MOLECULE'][1].split()
+    count_items[0] = str(len(template_dict['@<TRIPOS>ATOM']))
+    count_items[1] = str(len(template_dict['@<TRIPOS>BOND']))
+    template_dict['@<TRIPOS>MOLECULE'][1] = ("    ".join(count_items)) + '\n'
+    return template_dict
+
+def write_coords_to_mol2_template(pose_id, coords, mol2_template_dict, save_path, fmode='w'):
+    with open(save_path, fmode) as f:
+        # first write @<TRIPOS>MOLECULE
+        f.write('@<TRIPOS>MOLECULE\n')
+        f.write(f'rdock_{pose_id}\n')
+        for line in mol2_template_dict['@<TRIPOS>MOLECULE'][1:]:
+            f.write(line)
+
+        # second write @<TRIPOS>ATOM
+        f.write('@<TRIPOS>ATOM\n')
+        for coord, items in zip(coords, mol2_template_dict['@<TRIPOS>ATOM']):
+            f.write(f'{items[0]:>7d} {items[1]:<6s}    {coord[0]:>8.3f}  {coord[1]:>8.3f}  {coord[2]:>8.3f} {items[5]:<6s} {items[6]:<3s} {items[7]:<6s} {items[8]:>8s}\n')
+
+        # third write @<TRIPOS>BOND
+        f.write('@<TRIPOS>BOND\n')
+        for items in mol2_template_dict['@<TRIPOS>BOND']:
+            f.write(f'{items[0]:>6d} {items[1]:>6d} {items[2]:>6d} {items[3]:<4s}\n')
+
+def dump_rdock_pose_to_mol2(mol_dict, mol2_template_dict, save_path, fmode='w'):
+    pose_id, atoms, sdf_types, coords = mol_dict['pose_id'], mol_dict['atoms'], mol_dict['sdf_types'], mol_dict['coords']
+    assert(len(sdf_types) == len(mol2_template_dict['@<TRIPOS>ATOM']))
+    assert( '-'.join(sdf_types) == '-'.join([items[9] for items in mol2_template_dict['@<TRIPOS>ATOM']]) )
+    write_coords_to_mol2_template(pose_id, coords, mol2_template_dict, save_path, fmode=fmode)
+    # template_coords = [np.array((items[2:5]), dtype=float) for items in mol2_template_dict['@<TRIPOS>ATOM']]
+    # return cal_rmsd(template_coords, coords)
+
+
+if __name__ == '__main__':
+    # checking to make sure mol2 file does not exist before converting
+    assert not os.path.exists(o_path), f'{o_path} already exists before converting!'
+    mol2_template_dict = get_mol2_template_dict(r_path)
+    rdock_mol_list = read_bundle_sdf(p_path)
+    print(f'load {len(rdock_mol_list)} poses from {p_path}', flush=True)
+    for rdock_mol_dict in rdock_mol_list:
+        dump_rdock_pose_to_mol2(rdock_mol_dict, mol2_template_dict, o_path, fmode='a')
+    print('completed.', flush=True)

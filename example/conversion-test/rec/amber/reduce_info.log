@@ -1,0 +1,62 @@
+reduce: version 3.3 06/02/2016, Copyright 1997-2016, J. Michael Word
+Processing file: --standard input--
+Database of HETATM connections: "/app/amber22//dat/reduce_wwPDB_het_dict.txt"
+VDW dot density = 16/A^2
+Orientation penalty scale = 9999 (999900%)
+Eliminate contacts within 3 bonds.
+Ignore atoms with |occupancy| <= 0.01 during adjustments.
+Waters ignored if B-Factor >= 40 or |occupancy| < 0.66
+Aromatic rings in amino acids accept hydrogen bonds.
+Building His ring NH Hydrogens.
+Flipping Asn, Gln and His groups.
+For each flip state, bumps where gap is more than 0.4A are indicated with '!'.
+Building or keeping OH & SH Hydrogens.
+Rotating existing OH & SH Hydrogens
+Rotating NH3 Hydrogens.
+Not processing Met methyls.
+ Singles(size 31):     1 G   O2' :     1 G   O5' :     2 G   O2' :     3 C   O2' 
+  :     4 A   O2' :     5 G   O2' :     6 A   O2' :     7 U   O2' :     8 C   O2' 
+  :     9 U   O2' :    10 G   O2' :    11 A   O2' :    12 G   O2' :    13 C   O2' 
+  :    14 C   O2' :    15 U   O2' :    16 G   O2' :    17 G   O2' :    18 G   O2' 
+  :    19 A   O2' :    20 G   O2' :    21 C   O2' :    22 U   O2' :    23 C   O2' 
+  :    24 U   O2' :    25 C   O2' :    26 U   O2' :    27 G   O2' :    28 C   O2' 
+  :    29 C   O2' :    29 C   O3' 
+ orientation 3:     1 G   O2' :   rot  -18: bump=0.000, HB=0.078, total=0.078
+ orientation 2:     1 G   O5' :   rot -104: bump=0.000, HB=0.291, total=0.291
+ orientation 3:     2 G   O2' :   rot  -19: bump=-0.017, HB=0.001, total=-0.016
+ orientation 1:     3 C   O2' :   rot  180: bump=0.000, HB=0.000, total=0.000
+ orientation 1:     4 A   O2' :   rot  180: bump=-0.253, HB=0.000, total=-0.253
+ orientation 5:     5 G   O2' :   rot -105: bump=-0.003, HB=0.113, total=0.110
+ orientation 4:     6 A   O2' :   rot  -24: bump=0.000, HB=0.112, total=0.112
+ orientation 5:     7 U   O2' :   rot  -21: bump=-0.005, HB=0.687, total=0.681
+ orientation 5:     8 C   O2' :   rot  -66: bump=0.000, HB=0.696, total=0.696
+ orientation 4:     9 U   O2' :   rot   24: bump=0.000, HB=0.047, total=0.047
+ orientation 3:    10 G   O2' :   rot  -21: bump=0.000, HB=0.041, total=0.041
+ orientation 1:    11 A   O2' :   rot  180: bump=0.000, HB=0.000, total=0.000
+ orientation 3:    12 G   O2' :   rot  -20: bump=-0.097, HB=0.001, total=-0.096
+ orientation 4:    13 C   O2' :   rot  -13: bump=-0.074, HB=0.267, total=0.193
+ orientation 3:    14 C   O2' :   rot  -20: bump=0.000, HB=0.030, total=0.030
+ orientation 5:    15 U   O2' :   rot -116: bump=-0.003, HB=0.830, total=0.827
+ orientation 3:    16 G   O2' :   rot  -20: bump=0.000, HB=0.123, total=0.123
+ orientation 3:    17 G   O2' :   rot   48: bump=0.000, HB=0.190, total=0.190
+ orientation 4:    18 G   O2' :   rot   25: bump=0.000, HB=0.050, total=0.050
+ orientation 3:    19 A   O2' :   rot  -24: bump=0.000, HB=0.064, total=0.064
+ orientation 1:    20 G   O2' :   rot  180: bump=0.000, HB=0.000, total=0.000
+ orientation 3:    21 C   O2' :   rot  -26: bump=-0.009, HB=0.037, total=0.028
+ orientation 4:    22 U   O2' :   rot -113: bump=0.000, HB=0.422, total=0.422
+ orientation 3:    23 C   O2' :   rot  -25: bump=0.000, HB=0.172, total=0.172
+ orientation 5:    24 U   O2' :   rot  -89: bump=-0.036, HB=0.053, total=0.017
+ orientation 4:    25 C   O2' :   rot  -63: bump=-0.001, HB=0.387, total=0.386
+ orientation 4:    26 U   O2' :   rot -115: bump=0.000, HB=0.652, total=0.652
+ orientation 3:    27 G   O2' :   rot  -22: bump=0.000, HB=0.104, total=0.104
+ orientation 6:    28 C   O2' :   rot  -61: bump=-0.005, HB=0.748, total=0.743
+ orientation 3:    29 C   O2' :   rot  -23: bump=0.000, HB=0.060, total=0.060
+ orientation 2:    29 C   O3' :   rot  -27: bump=-2.231, HB=0.064, total=-2.167
+Found 315 hydrogens (0 hets)
+Standardized 390 hydrogens (0 hets)
+Added 2 hydrogens (0 hets)
+Removed 0 hydrogens (0 hets)
+Adjusted 31 group(s)
+If you publish work which uses reduce, please cite:
+Word, et. al. (1999) J. Mol. Biol. 285, 1735-1747.
+For more information see http://kinemage.biochem.duke.edu

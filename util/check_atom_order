@@ -5,12 +5,17 @@ import numpy as np
 
 parser = argparse.ArgumentParser(description='check_atom_order command-line arguments')
 parser.add_argument('-c', '--compound', type=str,  required=True, help='path to the amber prepared compound file, in mol2 format')
-parser.add_argument('-p', '--pose',     type=str,  required=True, help='path to the candidate compound pose file, in mol2 format')
+parser.add_argument('-p', '--pose',     type=str,  required=True, help='path to the compound pose file, in mol2 format')
+parser.add_argument('--c_mol2_type', type=str, required=True, help='mol2 type: amber or sybyl')
+parser.add_argument('--p_mol2_type', type=str, required=True, help='mol2 type: amber or sybyl')
+
 args = parser.parse_args()
-cpd_path, pose_path = args.compound, args.pose
+cpd_path, pose_path, cpd_mol2_type, pose_mol2_type = args.compound, args.pose, args.c_mol2_type, args.p_mol2_type
 
 assert os.path.exists(cpd_path),  f'compound file -> {cpd_path} does not exist'
 assert os.path.exists(pose_path), f'pose file -> {pose_path} does not exist'
+assert cpd_mol2_type == 'amber' or cpd_mol2_type == 'sybyl', f'c_mol2_type can only be amber or sybyl'
+assert pose_mol2_type == 'amber' or pose_mol2_type == 'sybyl', f'p_mol2_type can only be amber or sybyl'
 
 gaff2_to_elem_dict = {
     "h2": "H", "h3": "H", "h4": "H", "h5": "H", "ha": "H", "hc": "H", "hn": "H", "ho": "H", "hp": "H", "hs": "H", "hw": "H", "hx": "H",
@@ -111,8 +116,12 @@ if __name__ == '__main__':
     pose_mol_dict_list = parse_mol2(pose_path)
 
     cpd_elem_list = []
-    for gaff2_type in cpd_mol_dict['mol2_types']:
-        cpd_elem = gaff2_to_elem_dict[gaff2_type]
+    for mol2_type in cpd_mol_dict['mol2_types']:
+        cpd_elem = None
+        if cpd_mol2_type == 'amber':
+            cpd_elem = gaff2_to_elem_dict[mol2_type]
+        elif cpd_mol2_type == 'sybyl':
+            cpd_elem = sybyl_to_elem(mol2_type)
         if cpd_elem != 'H':
             cpd_elem_list.append(cpd_elem)
 
@@ -121,8 +130,12 @@ if __name__ == '__main__':
     #print(f'-------------------------------------------------------------------------', flush=True)
     for pose_idx, pose_mol_dict in enumerate(pose_mol_dict_list):
         pose_elem_list = []
-        for sybyl_type in pose_mol_dict['mol2_types']:
-            pose_elem = sybyl_to_elem(sybyl_type)
+        for mol2_type in pose_mol_dict['mol2_types']:
+            pose_elem = None
+            if pose_mol2_type == 'amber':
+                pose_elem = gaff2_to_elem_dict[mol2_type]
+            elif pose_mol2_type == 'sybyl':
+                pose_elem = sybyl_to_elem(mol2_type)
             if pose_elem != 'H':
                 pose_elem_list.append(pose_elem)
         pose_elem_str = '/'.join(pose_elem_list)

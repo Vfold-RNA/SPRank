@@ -3,3 +3,16 @@
 /docker
 pipeline.*
 .vscode/
+
+example/1AM0-A-41-AMP/score.dat
+example/1AM0-A-41-AMP/score_random_forest.dat
+example/3D2X-A-85-D2X/score.dat
+example/3D2X-A-85-D2X/score_random_forest.dat
+
+example/conversion-test/pose/rdock_pose.mol2
+example/conversion-test/pose/vina_pose.mol2
+
+example/conversion-test/score/rdock_pose_score.dat
+example/conversion-test/score/rdock_pose_random_forest_score.dat
+example/conversion-test/score/vina_pose_score.dat
+example/conversion-test/score/vina_pose_random_forest_score.dat
