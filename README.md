@@ -55,7 +55,7 @@ ${SPRANK_HOME}/bin/sprank-rf -h
 
 #### Run SPRank and SPRank-RF for example cases
 ```
-cd ${HOME}/SPRank/example && chmod +x ./run_example && ./run_example
+cd ${SPRANK_HOME}/example && chmod +x ./run_example && ./run_example
 ```
 The predicted scores will be saved in the corresponding folders as 
 `score.dat` for *sprank* and `score_random_forest.dat` for *sprank-rf*.
@@ -64,7 +64,7 @@ You can remove the comments in `./run_example` to prepare the input files using 
 
 #### Run conversion scripts for example cases
 ```
-cd ${HOME}/SPRank/example && chmod +x ./run_conversion_test && ./run_conversion_test
+cd ${SPRANK_HOME}/example && chmod +x ./run_conversion_test && ./run_conversion_test
 ```
 This script will run `convert_rdock_pose` and `convert_vina_pose` to convert 
 rDock and AutoDock Vina generated poses to mol2 format compatible with `sprank` and `sprank-rf`. 
@@ -100,17 +100,17 @@ You can remove the comments in `./run_conversion_test` to prepare the input file
 The training set, pose sets, affinity sets, random forest model, amber atom types, potentials, 
 HIV-1 TAR ensemble and compound library can be downloaded from the **Releases** or through the following commands:
 ```
-mkdir -p ${HOME}/SPRank/data/
+mkdir -p ${SPRANK_HOME}/data/
 ```
 ```
 for name in "checksum.txt" "training-set.tar.gz" "pose-sets.tar.gz" "affinity-sets.tar.gz" "random-forest.tar.gz" "amber-types.tar.gz" "potentials.tar.gz" "HIV-1-TAR.tar.gz"
 do
-    wget https://github.com/Vfold-RNA/SPRank/releases/download/data/${name} -O ${HOME}/SPRank/data/${name}
+    wget https://github.com/Vfold-RNA/SPRank/releases/download/data/${name} -O ${SPRANK_HOME}/data/${name}
 done
 ```
 Check the integrity of the files:
 ```
-cd ${HOME}/SPRank/data/
+cd ${SPRANK_HOME}/data/
 ```
 ```
 sha256sum --check checksum.txt
