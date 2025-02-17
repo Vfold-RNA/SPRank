@@ -182,7 +182,7 @@ def write_coords_to_mol2_template(pose_id, coords, mol2_template_dict, save_path
 def dump_rdock_pose_to_mol2(mol_dict, mol2_template_dict, save_path, fmode='w'):
     pose_id, atoms, sdf_types, coords = mol_dict['pose_id'], mol_dict['atoms'], mol_dict['sdf_types'], mol_dict['coords']
     assert(len(sdf_types) == len(mol2_template_dict['@<TRIPOS>ATOM']))
-    assert( '-'.join(sdf_types) == '-'.join([items[9] for items in mol2_template_dict['@<TRIPOS>ATOM']]) )
+    assert( '-'.join(sdf_types).upper() == '-'.join([items[9] for items in mol2_template_dict['@<TRIPOS>ATOM']]).upper() )
     write_coords_to_mol2_template(pose_id, coords, mol2_template_dict, save_path, fmode=fmode)
     # template_coords = [np.array((items[2:5]), dtype=float) for items in mol2_template_dict['@<TRIPOS>ATOM']]
     # return cal_rmsd(template_coords, coords)

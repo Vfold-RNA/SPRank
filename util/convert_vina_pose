@@ -202,7 +202,7 @@ def dump_vina_pose_to_mol2(mol_dict, mol2_template_dict, save_path, fmode='w'):
     assert(len(re_pdbqt_types) == len(pdbqt_types))
     assert(len(re_coords) == len(coords))
 
-    assert('-'.join(re_atoms) == '-'.join(items[1] for items in mol2_template_dict['@<TRIPOS>ATOM']))
+    assert('-'.join(re_atoms).upper() == '-'.join(items[1] for items in mol2_template_dict['@<TRIPOS>ATOM']).upper())
     write_coords_to_mol2_template(pose_id, re_coords, mol2_template_dict, save_path, fmode=fmode)
     # template_coords = [np.array((items[2:5]), dtype=float) for items in mol2_template_dict['@<TRIPOS>ATOM']]
     # return cal_rmsd(template_coords, re_coords)
